@@ -26,6 +26,7 @@ Book *createBook();
 void readRelation(Graph *graph);
 string readForDFS(Graph *graph);
 string readForBFS(Graph *graph);
+void readForPrim(Graph *graph);
 string readForDijkstra(Graph *graph);
 void dataTest(Graph *graph);
 
@@ -80,6 +81,7 @@ int main() {
 
             case 8:
                 cout << "\n- - - - - - - P R I M  A L G O R I T H M - - - - - - - - "<< endl;
+                readForPrim(graph);
                 break;
             case 9:
                 cout << "\n- - - - - - - D I J K S T R A  A L G O R I T H M - - - - - - - - "<< endl;
@@ -162,6 +164,15 @@ string readForBFS(Graph *graph) {
     getline(cin, book);
     return graph->bfs(book);
 
+}
+
+void readForPrim(Graph *graph){
+    string initialBook;
+    cout << "Ingrese el libro de inicio: ";
+    cin.ignore();
+    getline(cin, initialBook);
+    cout << "El grafo de costo minimo es: " << endl;
+    cout << *(graph->prim(initialBook));
 }
 
 string readForDijkstra(Graph *graph){

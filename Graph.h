@@ -32,7 +32,7 @@ public:
     //Graph algorithms
     string dfs(string principalNode);
     string bfs(string principalNode);
-    string prim(string principalNode);
+    Graph *prim(string principalNode);
     string dijkstraShortestPath(string principalNode, string destinationNode);
 
 
@@ -98,6 +98,15 @@ void Graph::relate(string principal, string secondary) {
 
 void Graph::deleteNode(string name) {
     // Implementation of deleteNode() function
+}
+
+bool isFinished(bool visitedList[], int size){
+    for(int i=0; i<size; i++){
+        if(!visitedList[i]){
+            return false;
+        }
+    }
+    return true;
 }
 
 string Graph::dfs(string principalNode) {
@@ -171,19 +180,48 @@ void Graph::bfsAlgorithm(queue<Nodebook *> *toVisit, bool *visited, Nodebook *cu
     }
 }
 
-string Graph::prim(string principalNode) {
-    // Implementation of Prim's algorithm
-    // Return result as a string
-    return "";
-}
+Graph* Graph::prim(string principalNode) {
+    Graph *toReturn = new Graph();
 
-bool isFinished(bool visitedList[], int size){
-    for(int i=0; i<size; i++){
-        if(!visitedList[i]){
-            return false;
+    //Initialize essential information
+    bool visited[books.size()];
+    for (int i=0; i<books.size();++i) visited[i]=false;
+
+    Nodebook *startNode = getNodebook(principalNode);
+    visited[books.positionOf(startNode)] = true;
+    toReturn->addEdge(startNode->getBook());
+
+    //Prim algorithm
+    do{
+        //We obtain the minimum of the visited nodes list
+        Vertex *minimum = new Vertex(NULL, NULL, INT_MAX);
+        for(int i=0; i<books.size();i++){
+            if(visited[i]){
+                Nodebook *iterator = books.at(i);
+                for(int j=0; j<iterator->getList().size();j++){
+                    Nodebook *helper = iterator->getList().at(j)->getTo();
+                    if(iterator->getList().at(j)->getCost()<minimum->getCost() &&
+                       !visited[books.positionOf(helper)]){
+                        minimum = iterator->getList().at(j);
+                    }
+                }
+            }
         }
-    }
-    return true;
+
+        Nodebook *helper = minimum->getTo();
+        visited[books.positionOf(helper)] = true;
+
+        toReturn->addEdge(minimum->getTo()->getBook());
+        toReturn->relate(minimum->getFrom()->getBook()->getTitle(),
+                         minimum->getTo()->getBook()->getTitle(),
+                         minimum->getCost());
+        toReturn->relate(minimum->getTo()->getBook()->getTitle(),
+                         minimum->getFrom()->getBook()->getTitle(),
+                         minimum->getCost());
+
+    } while(!isFinished(visited,books.size()));
+    return toReturn;
+
 }
 
 string Graph::dijkstraShortestPath(std::string principalNode, std::string destinationNode) {
